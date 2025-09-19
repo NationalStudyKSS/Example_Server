@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using SimpleJSON;
 using System.Collections;
-using Unity.Android.Gradle.Manifest;
+using UnityEngine.SceneManagement;
 
 public class NodeJS_MySQL : MonoBehaviour
 {
@@ -17,51 +17,52 @@ public class NodeJS_MySQL : MonoBehaviour
     [SerializeField] string _ranking_URL;       // "http://localhost:3000/ranking";
 
     [Header("UI Elements")]
-    [SerializeField] GameObject _loadingPanel;  // ·Îµù ½Ã È°¼ºÈ­ÇÒ ÆĞ³Î
-    [SerializeField] GameObject _popUpPanel;    // ÆË¾÷ ÆĞ³Î
-    [SerializeField] GameObject _mainPanel;     // ¸ŞÀÎ ÆĞ³Î
-    [SerializeField] GameObject _rankingPanel;  // ·©Å· ÆĞ³Î
+    [SerializeField] GameObject _loadingPanel;  // ë¡œë”© ì‹œ í™œì„±í™”í•  íŒ¨ë„
+    [SerializeField] GameObject _popUpPanel;    // íŒì—… íŒ¨ë„
+    [SerializeField] GameObject _mainPanel;     // ë©”ì¸ íŒ¨ë„
+    [SerializeField] GameObject _rankingPanel;  // ë­í‚¹ íŒ¨ë„
 
-    [SerializeField] InputField _inputFieldId;  // ¾ÆÀÌµğ ÀÔ·Â ÇÊµå
-    [SerializeField] InputField _inputFieldPw;  // ºñ¹Ğ¹øÈ£ ÀÔ·Â ÇÊµå
+    [SerializeField] InputField _inputFieldId;  // ì•„ì´ë”” ì…ë ¥ í•„ë“œ
+    [SerializeField] InputField _inputFieldPw;  // ë¹„ë°€ë²ˆí˜¸ ì…ë ¥ í•„ë“œ
 
-    [SerializeField] Text _PopUpText;           // ÆË¾÷Ã¢¿¡ Ç¥½ÃÇÒ ÅØ½ºÆ®
-    [SerializeField] Text _goldText;            // °ñµå ÅØ½ºÆ®
-    [SerializeField] Text _scoreText;           // Á¡¼ö ÅØ½ºÆ®
-    [SerializeField] Text _userIdText;          // À¯Àú ¾ÆÀÌµğ ÅØ½ºÆ®
+    [SerializeField] Text _PopUpText;           // íŒì—…ì°½ì— í‘œì‹œí•  í…ìŠ¤íŠ¸
+    [SerializeField] Text _goldText;            // ê³¨ë“œ í…ìŠ¤íŠ¸
+    [SerializeField] Text _scoreText;           // ì ìˆ˜ í…ìŠ¤íŠ¸
+    [SerializeField] Text _userIdText;          // ìœ ì € ì•„ì´ë”” í…ìŠ¤íŠ¸
 
     [Header("Client Data")]
-    [SerializeField] int _gold;                 // À¯Àú°¡ º¸À¯ÇÑ °ñµå
-    [SerializeField] int _score;                // À¯ÀúÀÇ ÃÖ°í Á¡¼ö
+    [SerializeField] int _gold;                 // ìœ ì €ê°€ ë³´ìœ í•œ ê³¨ë“œ
+    [SerializeField] int _score;                // ìœ ì €ì˜ ìµœê³  ì ìˆ˜
 
     [Header("Prefabs")]
-    [SerializeField] GameObject _rankingSlotPrefab; // ·©Å· ½½·Ô ÇÁ¸®ÆÕ
+    [SerializeField] GameObject _rankingSlotPrefab; // ë­í‚¹ ìŠ¬ë¡¯ í”„ë¦¬íŒ¹
+    [SerializeField] GameObject _content;            // ë­í‚¹ ìŠ¬ë¡¯ì´ ì¶”ê°€ë  ì»¨í…ì¸  ì˜¤ë¸Œì íŠ¸
 
     private void Start()
     {
-        // ½ÃÀÛ ½Ã ·Îµù ÆĞ³Î ºñÈ°¼ºÈ­
+        // ì‹œì‘ ì‹œ ë¡œë”© íŒ¨ë„ ë¹„í™œì„±í™”
         _loadingPanel.SetActive(false);
-        // ¼­¹ö ¿¬°á Å×½ºÆ® ÄÚ·çÆ¾ ½ÃÀÛ
+        // ì„œë²„ ì—°ê²° í…ŒìŠ¤íŠ¸ ì½”ë£¨í‹´ ì‹œì‘
         //StartCoroutine(TestConnect());
     }
 
     IEnumerator TestConnect()
     {
-        // ¿¬°áÀÌ ½ÃÀÛµÇ¸é ·Îµù ÆĞ³ÎÀ» È°¼ºÈ­
+        // ì—°ê²°ì´ ì‹œì‘ë˜ë©´ ë¡œë”© íŒ¨ë„ì„ í™œì„±í™”
         _loadingPanel.SetActive(true);
 
-        // ¼­¹ö¿¡ GET ¿äÃ» º¸³»±â
+        // ì„œë²„ì— GET ìš”ì²­ ë³´ë‚´ê¸°
         UnityWebRequest www = UnityWebRequest.Get(_mySQL_URL);
 
-        // ¿äÃ» Àü¼Û ¹× ÀÀ´ä ´ë±â
+        // ìš”ì²­ ì „ì†¡ ë° ì‘ë‹µ ëŒ€ê¸°
         yield return www.SendWebRequest();
 
         yield return new WaitForSeconds(1f);
 
-        // ¼­¹ö¿¡¼­ ¹ŞÀº ÀÀ´ä Ãâ·Â
+        // ì„œë²„ì—ì„œ ë°›ì€ ì‘ë‹µ ì¶œë ¥
         Debug.Log(www.downloadHandler.text);
 
-        // ¿¬°áÀÌ ³¡³ª¸é ·Îµù ÆĞ³ÎÀ» ºñÈ°¼ºÈ­
+        // ì—°ê²°ì´ ëë‚˜ë©´ ë¡œë”© íŒ¨ë„ì„ ë¹„í™œì„±í™”
         _loadingPanel.SetActive(false);
     }
 
@@ -69,13 +70,13 @@ public class NodeJS_MySQL : MonoBehaviour
     {
         if(string.IsNullOrEmpty(_inputFieldId.text) || string.IsNullOrEmpty(_inputFieldPw.text))
         {
-            _PopUpText.text = "¾ÆÀÌµğ¿Í ºñ¹Ğ¹øÈ£¸¦ ¸ğµÎ ÀÔ·ÂÇÏ¼¼¿ä.";
+            _PopUpText.text = "ì•„ì´ë””ì™€ ë¹„ë°€ë²ˆí˜¸ë¥¼ ëª¨ë‘ ì…ë ¥í•˜ì„¸ìš”.";
             _popUpPanel.SetActive(true);
             return;
         }
         else
         {
-            Debug.Log("È¸¿ø°¡ÀÔ ¼º°ø! ID : " + _inputFieldId.text + ", PW : " + _inputFieldPw.text);
+            Debug.Log("íšŒì›ê°€ì… ì„±ê³µ! ID : " + _inputFieldId.text + ", PW : " + _inputFieldPw.text);
             
             StartCoroutine(SignIn(_inputFieldId.text, _inputFieldPw.text));
         }
@@ -85,14 +86,14 @@ public class NodeJS_MySQL : MonoBehaviour
     {
         if (string.IsNullOrEmpty(_inputFieldId.text) || string.IsNullOrEmpty(_inputFieldPw.text))
         {
-            _PopUpText.text = "¾ÆÀÌµğ¿Í ºñ¹Ğ¹øÈ£¸¦ ¸ğµÎ ÀÔ·ÂÇÏ¼¼¿ä.";
+            _PopUpText.text = "ì•„ì´ë””ì™€ ë¹„ë°€ë²ˆí˜¸ë¥¼ ëª¨ë‘ ì…ë ¥í•˜ì„¸ìš”.";
             _popUpPanel.SetActive(true);
             return;
         }
         else
         {
-            Debug.Log("·Î±×ÀÎ ¼º°ø! ID : " + _inputFieldId.text + ", PW : " + _inputFieldPw.text);
-            // ¿©±â¼­ Åë½Å
+            Debug.Log("ë¡œê·¸ì¸ ì„±ê³µ! ID : " + _inputFieldId.text + ", PW : " + _inputFieldPw.text);
+            // ì—¬ê¸°ì„œ í†µì‹ 
             StartCoroutine(LogIn(_inputFieldId.text, _inputFieldPw.text));
         }
     }
@@ -118,16 +119,16 @@ public class NodeJS_MySQL : MonoBehaviour
         else
         {
             Debug.Log(www.downloadHandler.text);
-            // ³»°¡ ¼³Á¤ÇÑ /new °æ·ÎÀÇ ¼º°ø ¸Ş¼¼Áö¿Í ºñ±³ÇØ¼­ °°À¸¸é
+            // ë‚´ê°€ ì„¤ì •í•œ /new ê²½ë¡œì˜ ì„±ê³µ ë©”ì„¸ì§€ì™€ ë¹„êµí•´ì„œ ê°™ìœ¼ë©´
             if (www.downloadHandler.text == "Insert Successfully")
             {
-                _PopUpText.text = "È¸¿ø°¡ÀÔÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù.";
+                _PopUpText.text = "íšŒì›ê°€ì…ì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.";
                 _popUpPanel.SetActive(true);
             }
             else
             {
                 _popUpPanel.SetActive(true);
-                _PopUpText.text = "ÀÌ¹Ì Á¸ÀçÇÏ´Â ¾ÆÀÌµğÀÔ´Ï´Ù.";
+                _PopUpText.text = "ì´ë¯¸ ì¡´ì¬í•˜ëŠ” ì•„ì´ë””ì…ë‹ˆë‹¤.";
             }
         }
 
@@ -136,8 +137,8 @@ public class NodeJS_MySQL : MonoBehaviour
     }
 
     /// <summary>
-    /// id¿Í pw¸¦ ÅëÇØ ·Î±×ÀÎÀ» ½ÃµµÇÏ°í
-    /// °á°ú¿¡ µû¶ó 
+    /// idì™€ pwë¥¼ í†µí•´ ë¡œê·¸ì¸ì„ ì‹œë„í•˜ê³ 
+    /// ê²°ê³¼ì— ë”°ë¼ 
     /// </summary>
     /// <param name="id"></param>
     /// <param name="pw"></param>
@@ -163,19 +164,23 @@ public class NodeJS_MySQL : MonoBehaviour
         else
         {
             Debug.Log(www.downloadHandler.text);
-            // ³»°¡ ¼³Á¤ÇÑ /login °æ·ÎÀÇ ¼º°ø ¸Ş¼¼Áö¿Í ºñ±³ÇØ¼­ °°À¸¸é
+            // ë‚´ê°€ ì„¤ì •í•œ /login ê²½ë¡œì˜ ì„±ê³µ ë©”ì„¸ì§€ì™€ ë¹„êµí•´ì„œ ê°™ìœ¼ë©´
             if (www.downloadHandler.text == "Login Successfully")
             {
                 _popUpPanel.SetActive(true);
                 _loadingPanel.SetActive(false);
-                _PopUpText.text = "·Î±×ÀÎ ¼º°ø.";
-                // ·Î±×ÀÎ ¼º°ø ½Ã id¸¦ ÅëÇØ Á¤º¸¸¦ °¡Á®¿À´Â ÄÚ·çÆ¾ ½ÇÇà
+                _PopUpText.text = "ë¡œê·¸ì¸ ì„±ê³µ.";
+
+                // ë¡œê·¸ì¸ ì„±ê³µ ì‹œ ìœ ì € ì•„ì´ë”” í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
+                _userIdText.text = id;
+
+                // ë¡œê·¸ì¸ ì„±ê³µ ì‹œ idë¥¼ í†µí•´ ì •ë³´ë¥¼ ê°€ì ¸ì˜¤ëŠ” ì½”ë£¨í‹´ ì‹¤í–‰
                 StartCoroutine(GetUserInfo(id));
             }
             else
             {
                 _popUpPanel.SetActive(true);
-                _PopUpText.text = "ÀÔ·Â Á¤º¸°¡ Àß¸øµÇ¾ú½À´Ï´Ù.";
+                _PopUpText.text = "ì…ë ¥ ì •ë³´ê°€ ì˜ëª»ë˜ì—ˆìŠµë‹ˆë‹¤.";
             }
         }
 
@@ -184,43 +189,43 @@ public class NodeJS_MySQL : MonoBehaviour
     }
 
     /// <summary>
-    /// À¯ÀúÀÇ id¸¦ ÅëÇØ Á¤º¸¸¦ °¡Á®¿À´Â ÄÚ·çÆ¾
+    /// ìœ ì €ì˜ idë¥¼ í†µí•´ ì •ë³´ë¥¼ ê°€ì ¸ì˜¤ëŠ” ì½”ë£¨í‹´
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     IEnumerator GetUserInfo(string id)
     {
-        // ¿¬°áÀÌ ½ÃÀÛµÇ¸é ·Îµù ÆĞ³ÎÀ» È°¼ºÈ­
+        // ì—°ê²°ì´ ì‹œì‘ë˜ë©´ ë¡œë”© íŒ¨ë„ì„ í™œì„±í™”
         _loadingPanel.SetActive(true);
 
-        // WWWForm Çü½ÄÀÇ °´Ã¼ »ı¼º
+        // WWWForm í˜•ì‹ì˜ ê°ì²´ ìƒì„±
         WWWForm form = new WWWForm();
-        // form¿¡ ÀÔ·Â¹ŞÀº id¸¦ ±â¹İÀ¸·Î "user"¶ó´Â Å°°ªÀ¸·Î Ãß°¡
-        // user¶ó´Â Å°°ªÀ» »ı¼ºÇÏ´Â°ÅÀÓ
+        // formì— ì…ë ¥ë°›ì€ idë¥¼ ê¸°ë°˜ìœ¼ë¡œ "user"ë¼ëŠ” í‚¤ê°’ìœ¼ë¡œ ì¶”ê°€
+        // userë¼ëŠ” í‚¤ê°’ì„ ìƒì„±í•˜ëŠ”ê±°ì„
         form.AddField("user", id);
 
-        // POST ¹æ½ÄÀ¸·Î ¼­¹ö¿¡ µ¥ÀÌÅÍ Àü¼Û
+        // POST ë°©ì‹ìœ¼ë¡œ ì„œë²„ì— ë°ì´í„° ì „ì†¡
         UnityWebRequest www = UnityWebRequest.Post(_select_URL, form);
-        // ¿äÃ» Àü¼Û ¹× ÀÀ´ä ´ë±â
+        // ìš”ì²­ ì „ì†¡ ë° ì‘ë‹µ ëŒ€ê¸°
         yield return www.SendWebRequest();
 
-        // ¸¸¾à ¼º°øÀûÀ¸·Î ÀÀ´äÀ» ¹ŞÁö ¸øÇß´Ù¸é
+        // ë§Œì•½ ì„±ê³µì ìœ¼ë¡œ ì‘ë‹µì„ ë°›ì§€ ëª»í–ˆë‹¤ë©´
         if (www.result != UnityWebRequest.Result.Success)
         {
-            // ÀÀ´ä °á°ú¿Í ¿¡·¯ ¸Ş¼¼Áö Ãâ·Â
+            // ì‘ë‹µ ê²°ê³¼ì™€ ì—ëŸ¬ ë©”ì„¸ì§€ ì¶œë ¥
             Debug.Log(www.result);
             Debug.Log(www.error);
 
-            // ÆË¾÷ ÆĞ³Î È°¼ºÈ­ ¹× ¿¡·¯ ¸Ş¼¼Áö Ç¥½Ã
+            // íŒì—… íŒ¨ë„ í™œì„±í™” ë° ì—ëŸ¬ ë©”ì„¸ì§€ í‘œì‹œ
             _popUpPanel.SetActive(true);
             _PopUpText.text = www.error;
         }
-        // ÀÀ´äÀ» ¼º°øÀûÀ¸·Î ¹Ş¾Ò´Ù¸é
+        // ì‘ë‹µì„ ì„±ê³µì ìœ¼ë¡œ ë°›ì•˜ë‹¤ë©´
         else
         {
-            // ¼­¹ö¿¡¼­ ¹ŞÀº ÀÀ´äÀ» debug.log·Î Ãâ·Â
+            // ì„œë²„ì—ì„œ ë°›ì€ ì‘ë‹µì„ debug.logë¡œ ì¶œë ¥
             Debug.Log(www.downloadHandler.text);
-            // JSON Çü½ÄÀ¸·Î ÆÄ½Ì
+            // JSON í˜•ì‹ìœ¼ë¡œ íŒŒì‹±
             var jsonData = JSON.Parse(www.downloadHandler.text);
 
             Debug.Log("Gold : " + jsonData[0]["Gold"].GetType());
@@ -229,12 +234,198 @@ public class NodeJS_MySQL : MonoBehaviour
             _gold = jsonData[0]["Gold"];
             _score = jsonData[0]["Score"];
 
-            // UI ÅØ½ºÆ® ¾÷µ¥ÀÌÆ® ¹× ¸ŞÀÎ ÆĞ³Î È°¼ºÈ­
+            // UI í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸ ë° ë©”ì¸ íŒ¨ë„ í™œì„±í™”
             _goldText.text = "Gold: " + _gold.ToString();
             _scoreText.text = "Score: " + _score.ToString();
             _mainPanel.SetActive(true);
         }
         yield return new WaitForSeconds(1f);
         _loadingPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// ìœ ì €ì˜ ì •ë³´ë¥¼ ì—…ë°ì´íŠ¸ í•˜ëŠ” ì½”ë£¨í‹´
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    IEnumerator UpdateUserInfo(string id)
+    {
+        _loadingPanel.SetActive(true);
+
+        // ë‚´ê°€ ì„œë²„ì— ë³´ë‚¼ í¼ì„ í•˜ë‚˜ ë§Œë“¤ê³ 
+        WWWForm form = new WWWForm();
+
+        // í¼ì— ì‘ì„±í•  ë°ì´í„°ë¥¼ ì¶”ê°€í•œë‹¤.
+        form.AddField("user", id);
+        form.AddField("gold", _gold);
+        form.AddField("score", _score);
+
+        // ì‘ì„±í•œ í¼ì„ UpdateURL ê²½ë¡œë¡œ POST ë°©ì‹ìœ¼ë¡œ ì „ì†¡
+        UnityWebRequest www = UnityWebRequest.Post(_update_URL, form);
+        // ìš”ì²­ ì „ì†¡ ë° ì‘ë‹µ ëŒ€ê¸°
+        yield return www.SendWebRequest();
+
+        if(www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.result);
+            Debug.Log(www.error);
+            _popUpPanel.SetActive(true);
+            _PopUpText.text = www.error;
+        }
+        else
+        {
+            Debug.Log(www.downloadHandler.text);
+            if (www.downloadHandler.text == "Update Successfully")
+            {
+                _PopUpText.text = "ì •ë³´ê°€ ì—…ë°ì´íŠ¸ ë˜ì—ˆìŠµë‹ˆë‹¤.";
+                _popUpPanel.SetActive(true);
+            }
+            else
+            {
+                _popUpPanel.SetActive(true);
+                _PopUpText.text = "ì •ë³´ ì—…ë°ì´íŠ¸ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.";
+            }
+        }
+        yield return new WaitForSeconds(1f);
+        _loadingPanel.SetActive(false);
+    }
+
+    IEnumerator DeleteUserInfo(string id)
+    {
+        _loadingPanel.SetActive(true);
+        WWWForm form = new WWWForm();
+        form.AddField("user", id);
+        UnityWebRequest www = UnityWebRequest.Post(_delete_URL, form);
+        yield return www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.result);
+            Debug.Log(www.error);
+            _popUpPanel.SetActive(true);
+            _PopUpText.text = www.error;
+        }
+        else
+        {
+            Debug.Log(www.downloadHandler.text);
+            if (www.downloadHandler.text == "Delete Successfully")
+            {
+                _PopUpText.text = "íšŒì›íƒˆí‡´ê°€ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.";
+                SceneManager.LoadScene(0);
+            }
+            else
+            {
+                _popUpPanel.SetActive(true);
+                _PopUpText.text = "íšŒì›íƒˆí‡´ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.";
+            }
+        }
+        yield return new WaitForSeconds(1f);
+        _loadingPanel.SetActive(false);
+    }
+
+    IEnumerator GetRanking()
+    {
+        _loadingPanel.SetActive(true);
+        UnityWebRequest www = UnityWebRequest.Get(_ranking_URL);
+        yield return www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.result);
+            Debug.Log(www.error);
+            _popUpPanel.SetActive(true);
+            _PopUpText.text = www.error;
+        }
+        else
+        {
+            Debug.Log(www.downloadHandler.text);
+            _rankingPanel.SetActive(true);
+            string jsonData = www.downloadHandler.text;
+            var data = JSON.Parse(jsonData);
+            Debug.Log(data.Count);
+
+            Transform content = GameObject.Find("Content").transform;
+            
+            for(int i = 0; i < data.Count; i++)
+            {
+                GameObject item = Instantiate(_rankingSlotPrefab);
+                item.transform.SetParent(content);
+                item.transform.localScale = Vector3.one;
+
+                item.transform.GetChild(1).GetComponent<Text>().text = data[i]["UserID"].ToString();
+                item.transform.GetChild(2).GetComponent<Text>().text = data[i]["Score"].ToString();
+
+                if (i < 3)
+                {
+                    item.transform.GetChild(0).GetComponent<Text>().text = (i + 1).ToString();
+                }
+                else
+                {
+                    item.transform.GetChild(0).GetComponent<Text>().text = "";
+                }
+            } 
+        }
+        yield return new WaitForSeconds(1f);
+        _loadingPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// ì—…ë°ì´íŠ¸ ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ UIë¥¼ ê°±ì‹ í•˜ëŠ” í•¨ìˆ˜
+    /// </summary>
+    public void OnClickUpdateInfo()
+    {
+        StartCoroutine(UpdateUserInfo(_userIdText.text));
+        _goldText.text = "Gold: " + _gold.ToString();
+        _scoreText.text = "Score: " + _score.ToString();
+    }
+
+    public void OnClickDeleteInfo()
+    {
+        StartCoroutine(DeleteUserInfo(_userIdText.text));
+    }
+
+    public void OnClickShowRanking()
+    {
+        StartCoroutine(GetRanking());
+    }
+
+    public void DeleteAllRankingItems()
+    {
+        
+        for(int i = 0; i < _content.transform.childCount; i++)
+        {
+            Destroy(_content.transform.GetChild(i).gameObject);
+        }
+        _rankingPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// ê³¨ë“œ ì¦ê°€ ë˜ëŠ” ê°ì†Œ ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
+    /// </summary>
+    /// <param name="value">trueë©´ ì¦ê°€</param>
+    public void ControllGold(bool value)
+    {
+        if(value)
+            _gold += 100;
+        else
+        {
+            if(_gold >= 100)
+                _gold -= 100;
+        }
+        _goldText.text = "Gold: " + _gold.ToString();
+    }
+
+    /// <summary>
+    /// ì ìˆ˜ ì¦ê°€ ë˜ëŠ” ê°ì†Œ ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
+    /// </summary>
+    /// <param name="value">trueë©´ ì¦ê°€</param>
+    public void ControllScore(bool value)
+    {
+        if (value)
+            _score += 10;
+        else
+        {
+            if (_score >= 10)
+                _score -= 10;
+        }
+        _scoreText.text = "Score: " + _score.ToString();
     }
 }

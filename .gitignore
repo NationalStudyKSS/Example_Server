@@ -64,6 +64,13 @@ sysinfo.txt
 *.unitypackage.meta
 *.app
 
+# .bundle 디렉토리 무시
+.bundle/
+*.bundle
+
+# 모든 .so 파일 무시
+*.so
+
 # Crashlytics generated file
 crashlytics-build.properties
 
